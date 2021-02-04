@@ -235,6 +235,40 @@ ts=2018-12-03 20:04:34; [cost=131.303498ms] result=@Integer[8]
 ts=2018-12-03 20:04:35; [cost=0.961441ms] result=@Integer[8]
 ``` 
 
+#### 获取类的静态字段、调用类的静态方法的例子
+
+```bash
+watch demo.MathGame * '{params,@demo.MathGame@random.nextInt(100)}' -v -n 1 -x 2
+[arthas@6527]$ watch demo.MathGame * '{params,@demo.MathGame@random.nextInt(100)}' -n 1 -x 2
+Press Q or Ctrl+C to abort.
+Affect(class count: 1 , method count: 5) cost in 34 ms, listenerId: 3
+ts=2021-01-05 21:35:20; [cost=0.173966ms] result=@ArrayList[
+    @Object[][
+        @Integer[-138282],
+    ],
+    @Integer[89],
+]
+```
+
+* 注意这里使用 `Thread.currentThread().getContextClassLoader()` 加载,使用精确`classloader` [ognl](ognl.md)更好。
+
+#### 排除掉指定的类
+
+> watch/trace/monitor/stack/tt 命令都支持 `--exclude-class-pattern` 参数
+
+使用 `--exclude-class-pattern` 参数可以排除掉指定的类，比如：
+
+```bash
+watch javax.servlet.Filter * --exclude-class-pattern com.demo.TestFilter
+```
+#### 不匹配子类
+
+默认情况下 watch/trace/monitor/stack/tt 命令都会匹配子类。如果想不匹配，可以通过全局参数关掉。
+
+```bash
+options disable-sub-class true
+```
+
 #### 使用 -v 参数打印更多信息
 
 > watch/trace/monitor/stack/tt 命令都支持 `-v` 参数
